@@ -15,6 +15,7 @@ export const QUERY_KEYS = {
   itinerary: (tripId: string) => ['itinerary', tripId] as const,
   vault: (userId: string) => ['vault', userId] as const,
   vaultTrip: (tripId: string) => ['vault', 'trip', tripId] as const,
+  vaultItem: (itemId: string) => ['vault', 'item', itemId] as const,
   voteSessions: (tripId: string) => ['votes', tripId] as const,
   album: (tripId: string) => ['album', tripId] as const,
   profile: (userId: string) => ['profile', userId] as const,

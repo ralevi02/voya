@@ -1,40 +1,54 @@
 import { supabase } from '@/lib/supabase';
-import type { VaultDocument } from '../types/vault.types';
-import type { CreateDocumentInput } from '../types/schemas';
+import type {
+  TravelDocument,
+  CreateDocumentInput,
+} from '../types/vault.types';
 
-export async function getDocumentsByUser(
-  userId: string
-): Promise<VaultDocument[]> {
+export async function getTripDocuments(
+  tripId: string,
+): Promise<TravelDocument[]> {
   const { data, error } = await supabase
-    .from('vault_documents')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-  if (error) throw error;
-  return (data ?? []) as VaultDocument[];
-}
-
-export async function getDocumentsByTrip(
-  tripId: string
-): Promise<VaultDocument[]> {
-  const { data, error } = await supabase
-    .from('vault_documents')
+    .from('travel_documents')
     .select('*')
     .eq('trip_id', tripId)
     .order('created_at', { ascending: false });
   if (error) throw error;
-  return (data ?? []) as VaultDocument[];
+  return (data ?? []) as TravelDocument[];
+}
+
+export async function getDocumentsByItem(
+  itemId: string,
+): Promise<TravelDocument[]> {
+  const { data, error } = await supabase
+    .from('travel_documents')
+    .select('*')
+    .eq('associated_itinerary_item_id', itemId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as TravelDocument[];
 }
 
 export async function createDocument(
   input: CreateDocumentInput,
-  userId: string
-): Promise<VaultDocument> {
+): Promise<TravelDocument> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('No autenticado');
+
   const { data, error } = await supabase
-    .from('vault_documents')
-    .insert({ ...input, user_id: userId })
+    .from('travel_documents')
+    .insert({ ...input, owner_id: user.id })
     .select()
     .single();
   if (error) throw error;
-  return data as VaultDocument;
+  return data as TravelDocument;
+}
+
+export async function deleteDocument(
+  id: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('travel_documents')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
 }

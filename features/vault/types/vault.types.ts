@@ -1,30 +1,32 @@
-export type DocumentType =
-  | 'passport'
-  | 'ticket'
-  | 'boarding_pass'
-  | 'reservation'
+export type DocType =
+  | 'flight'
+  | 'hotel'
   | 'insurance'
-  | 'visa'
+  | 'passport'
   | 'other';
 
-export interface VaultDocument {
+export interface TravelDocument {
   id: string;
-  trip_id: string | null;
-  user_id: string;
-  type: DocumentType;
-  title: string;
+  trip_id: string;
+  owner_id: string;
+  name: string;
+  doc_type: DocType;
   file_url: string;
-  local_path: string | null;
-  metadata: Record<string, unknown>;
-  is_encrypted: boolean;
+  file_size: number | null;
+  mime_type: string | null;
+  associated_itinerary_item_id: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface CreateDocumentInput {
-  trip_id?: string | null;
-  type: DocumentType;
-  title: string;
+  trip_id: string;
+  name: string;
+  doc_type: DocType;
   file_url: string;
-  metadata?: Record<string, unknown>;
+  file_size?: number | null;
+  mime_type?: string | null;
+  associated_itinerary_item_id?: string | null;
 }
+
+export type VaultFilter = 'all' | 'mine' | 'group';
