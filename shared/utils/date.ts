@@ -1,12 +1,27 @@
+/**
+ * Parsea una fecha tipo "2026-05-01" sin desfase de timezone.
+ * new Date("2026-05-01") interpreta como UTC → desfase en zonas negativas.
+ * Esta función parsea los componentes manualmente.
+ */
+export function parseDateSafe(dateStr: string): Date {
+  if (dateStr.includes('T')) return new Date(dateStr);
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 export function formatDate(
   dateStr: string,
   locale = 'en-US'
 ): string {
-  return new Date(dateStr).toLocaleDateString(locale, {
+  return parseDateSafe(dateStr).toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
+}
+
+export function formatTripDate(dateStr: string): string {
+  return formatDate(dateStr, 'es-CL');
 }
 
 export function formatTime(
