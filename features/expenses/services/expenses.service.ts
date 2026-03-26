@@ -1,62 +1,48 @@
 import { supabase } from '@/lib/supabase';
-import type { Expense, ExpenseSplit } from '../types/expense.types';
-import type { CreateExpenseInput } from '../types/schemas';
+import type {
+  ExpenseWithSplits,
+  CreateExpenseInput,
+} from '../types/expense.types';
 
 export async function getExpensesByTrip(
-  tripId: string
-): Promise<Expense[]> {
+  tripId: string,
+): Promise<ExpenseWithSplits[]> {
   const { data, error } = await supabase
     .from('expenses')
-    .select('*')
+    .select('*, expense_splits(*)')
     .eq('trip_id', tripId)
-    .order('created_at', { ascending: false });
+    .order('expense_date', { ascending: false });
   if (error) throw error;
-  return (data ?? []) as Expense[];
+  return (data ?? []) as ExpenseWithSplits[];
 }
 
-export async function getExpensesByUser(
-  userId: string
-): Promise<Expense[]> {
-  const { data, error } = await supabase
+export async function createExpenseWithSplits(
+  input: CreateExpenseInput,
+): Promise<string> {
+  const { data, error } = await supabase.rpc(
+    'create_expense_with_splits',
+    {
+      p_trip_id: input.trip_id,
+      p_title: input.title,
+      p_amount: input.amount,
+      p_currency: input.currency,
+      p_exchange_rate: input.exchange_rate,
+      p_base_amount: input.base_amount,
+      p_category: input.category,
+      p_description: input.description ?? null,
+      p_expense_date: input.expense_date ?? null,
+      p_receipt_url: input.receipt_url ?? null,
+      p_splits: input.splits,
+    },
+  );
+  if (error) throw error;
+  return data as string;
+}
+
+export async function deleteExpense(id: string): Promise<void> {
+  const { error } = await supabase
     .from('expenses')
-    .select('*')
-    .eq('paid_by', userId)
-    .order('created_at', { ascending: false });
+    .delete()
+    .eq('id', id);
   if (error) throw error;
-  return (data ?? []) as Expense[];
-}
-
-export async function createExpense(
-  input: CreateExpenseInput
-): Promise<Expense> {
-  const { splits, ...expenseData } = input;
-  const { data, error } = await supabase
-    .from('expenses')
-    .insert(expenseData)
-    .select()
-    .single();
-  if (error) throw error;
-
-  const expense = data as Expense;
-  const splitRows = splits.map((s) => ({
-    expense_id: expense.id,
-    ...s,
-  }));
-  const { error: splitError } = await supabase
-    .from('expense_splits')
-    .insert(splitRows);
-  if (splitError) throw splitError;
-
-  return expense;
-}
-
-export async function getSplitsByExpense(
-  expenseId: string
-): Promise<ExpenseSplit[]> {
-  const { data, error } = await supabase
-    .from('expense_splits')
-    .select('*')
-    .eq('expense_id', expenseId);
-  if (error) throw error;
-  return (data ?? []) as ExpenseSplit[];
 }

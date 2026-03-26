@@ -1,40 +1,39 @@
 import { z } from 'zod';
 
-const splitMethods = ['equal', 'exact', 'percentage', 'shares'] as const;
+const categories = [
+  'food', 'transport', 'lodging', 'activity',
+  'shopping', 'health', 'communication', 'other',
+] as const;
 
-const expenseSplitInputSchema = z.object({
+const splitInputSchema = z.object({
   user_id: z.string().uuid(),
-  amount: z.number().nonnegative(),
+  amount_owed: z.number().nonnegative('Monto no puede ser negativo'),
 });
 
 export const createExpenseSchema = z.object({
   trip_id: z.string().uuid(),
-  title: z.string().min(1, 'Título requerido'),
-  amount: z.number().positive('Monto debe ser positivo'),
+  title: z.string().min(1, 'Título requerido').max(120),
+  amount: z.number().positive('Monto debe ser mayor a 0'),
   currency: z.string().length(3, 'Código de moneda inválido'),
-  category: z.string().min(1, 'Categoría requerida'),
-  paid_by: z.string().uuid(),
-  split_method: z.enum(splitMethods),
-  splits: z.array(expenseSplitInputSchema).min(1),
+  exchange_rate: z.number().positive(),
+  base_amount: z.number().nonnegative(),
+  category: z.enum(categories),
+  description: z.string().max(500).nullable().optional(),
+  expense_date: z.string().optional(),
   receipt_url: z.string().url().nullable().optional(),
-  location_name: z.string().nullable().optional(),
-});
+  splits: z
+    .array(splitInputSchema)
+    .min(1, 'Debe haber al menos un split'),
+}).refine(
+  (data) => {
+    const splitsTotal = data.splits.reduce(
+      (sum, s) => sum + s.amount_owed, 0,
+    );
+    return Math.abs(splitsTotal - data.amount) < 0.01;
+  },
+  { message: 'La suma de splits debe ser igual al monto total' },
+);
 
-export const expenseSchema = z.object({
-  id: z.string().uuid(),
-  trip_id: z.string().uuid(),
-  title: z.string(),
-  amount: z.number(),
-  currency: z.string(),
-  base_amount: z.number(),
-  category: z.string(),
-  paid_by: z.string().uuid(),
-  split_method: z.enum(splitMethods),
-  receipt_url: z.string().url().nullable(),
-  location_name: z.string().nullable(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
-});
-
-export type CreateExpenseInput = z.infer<typeof createExpenseSchema>;
-export type ExpenseResponse = z.infer<typeof expenseSchema>;
+export type CreateExpenseFormData = z.infer<
+  typeof createExpenseSchema
+>;
