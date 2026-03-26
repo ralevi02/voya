@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import type { Profile } from '../types/auth.types';
 
-export async function signInWithEmail(email: string, password: string) {
+export async function signIn(email: string, password: string) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -10,7 +10,7 @@ export async function signInWithEmail(email: string, password: string) {
   return data;
 }
 
-export async function signUpWithEmail(
+export async function signUp(
   email: string,
   password: string,
   displayName: string
@@ -27,6 +27,12 @@ export async function signUpWithEmail(
 export async function signOut() {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
+}
+
+export async function getCurrentSession() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw error;
+  return data.session;
 }
 
 export async function getProfile(userId: string): Promise<Profile> {

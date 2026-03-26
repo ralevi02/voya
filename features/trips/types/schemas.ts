@@ -1,37 +1,40 @@
 import { z } from 'zod';
 
-export const createTripSchema = z.object({
-  name: z.string().min(1, 'Nombre requerido').max(100),
-  description: z.string().max(500).default(''),
-  destination: z.string().min(1, 'Destino requerido'),
-  start_date: z.string().date('Fecha inválida'),
-  end_date: z.string().date('Fecha inválida'),
-  base_currency: z.string().length(3, 'Código de moneda inválido'),
-  cover_image_url: z.string().url().nullable().optional(),
+function isValidDate(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !isNaN(Date.parse(value));
+}
+
+export const createTripSchema = z
+  .object({
+    name: z.string().min(2, 'Mínimo 2 caracteres'),
+    destination: z.string().min(2, 'Ingresa un destino'),
+    start_date: z.string().refine(isValidDate, 'Fecha inválida (YYYY-MM-DD)'),
+    end_date: z.string().refine(isValidDate, 'Fecha inválida (YYYY-MM-DD)'),
+    description: z.string().optional(),
+    base_currency: z.string().default('USD'),
+    cover_image: z.string().optional(),
+  })
+  .refine((data) => new Date(data.end_date) >= new Date(data.start_date), {
+    message: 'La fecha de fin debe ser posterior a la de inicio',
+    path: ['end_date'],
+  });
+
+export const stepDestinationSchema = z.object({
+  destination: z.string().min(2, 'Ingresa un destino'),
 });
 
-export const tripSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
-  description: z.string(),
-  destination: z.string(),
-  start_date: z.string(),
-  end_date: z.string(),
-  base_currency: z.string(),
-  cover_image_url: z.string().url().nullable(),
-  created_by: z.string().uuid(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+export const stepDatesSchema = z
+  .object({
+    start_date: z.string().refine(isValidDate, 'Fecha inválida'),
+    end_date: z.string().refine(isValidDate, 'Fecha inválida'),
+  })
+  .refine((data) => new Date(data.end_date) >= new Date(data.start_date), {
+    message: 'La vuelta debe ser posterior a la ida',
+    path: ['end_date'],
+  });
+
+export const stepDetailsSchema = z.object({
+  name: z.string().min(2, 'Mínimo 2 caracteres'),
 });
 
-export const tripMemberSchema = z.object({
-  id: z.string().uuid(),
-  trip_id: z.string().uuid(),
-  user_id: z.string().uuid(),
-  role: z.enum(['admin', 'member']),
-  joined_at: z.string().datetime(),
-});
-
-export type CreateTripInput = z.infer<typeof createTripSchema>;
-export type TripResponse = z.infer<typeof tripSchema>;
-export type TripMemberResponse = z.infer<typeof tripMemberSchema>;
+export type CreateTripFormInput = z.infer<typeof createTripSchema>;

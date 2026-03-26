@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '@/lib/storage';
 
 interface AppStore {
   activeTripId: string | null;
@@ -25,7 +25,7 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'voya-app',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => storage),
     }
   )
 );
