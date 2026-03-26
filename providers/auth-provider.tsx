@@ -11,31 +11,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { setSession, setProfile, setLoading } = useAuthStore();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        getProfile(session.user.id)
-          .then(setProfile)
-          .catch(() => setProfile(null));
-      }
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
         setSession(session);
         if (session?.user) {
-          try {
-            const profile = await getProfile(session.user.id);
-            setProfile(profile);
-          } catch {
-            setProfile(null);
-          }
-        } else {
+          return getProfile(session.user.id)
+            .then(setProfile)
+            .catch(() => setProfile(null));
+        }
+      })
+      .catch(() => {
+        setSession(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setSession(session);
+      if (session?.user) {
+        try {
+          const profile = await getProfile(session.user.id);
+          setProfile(profile);
+        } catch {
           setProfile(null);
         }
+      } else {
+        setProfile(null);
       }
-    );
+    });
 
     return () => subscription.unsubscribe();
   }, [setSession, setProfile, setLoading]);

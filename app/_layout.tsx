@@ -1,3 +1,4 @@
+import '@/global.css';
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import { Slot, useRouter, useSegments } from 'expo-router';
