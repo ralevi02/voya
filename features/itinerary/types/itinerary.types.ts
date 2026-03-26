@@ -1,42 +1,40 @@
-export type TravelObjectType =
+export type ItineraryItemType =
   | 'flight'
   | 'hotel'
-  | 'activity'
-  | 'restaurant'
-  | 'transport'
-  | 'other';
+  | 'food'
+  | 'activity';
 
-export interface TravelObject {
+export interface ItineraryItem {
   id: string;
   trip_id: string;
-  type: TravelObjectType;
   title: string;
-  description: string;
+  type: ItineraryItemType;
   start_time: string;
   end_time: string | null;
   location_name: string | null;
   location_lat: number | null;
   location_lng: number | null;
-  metadata: Record<string, unknown>;
+  notes: string | null;
+  is_completed: boolean;
   created_by: string;
   created_at: string;
   updated_at: string;
 }
 
-export interface CreateTravelObjectInput {
+export interface CreateItineraryItemInput {
   trip_id: string;
-  type: TravelObjectType;
   title: string;
-  description?: string;
+  type: ItineraryItemType;
   start_time: string;
   end_time?: string | null;
   location_name?: string | null;
   location_lat?: number | null;
   location_lng?: number | null;
-  metadata?: Record<string, unknown>;
+  notes?: string | null;
 }
 
 export interface ItineraryDay {
   date: string;
-  items: TravelObject[];
+  label: string;
+  items: ItineraryItem[];
 }
