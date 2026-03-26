@@ -2,6 +2,7 @@ import { View, Text, Modal, Pressable, ScrollView } from 'react-native';
 import { X, Clock, MapPin, FileText } from 'lucide-react-native';
 import { ItemTypeIcon } from './item-type-icon';
 import { MapPreview } from './map-preview';
+import { LinkedDocuments } from '@/features/vault/components/linked-documents';
 import { ITEM_TYPE_CONFIG } from '../constants/item-types';
 import type { ItineraryItem } from '../types/itinerary.types';
 
@@ -112,6 +113,9 @@ export function ItemDetailModal({
               </Text>
             </View>
           )}
+
+          {/* Linked Documents */}
+          <LinkedDocuments itemId={item.id} />
         </ScrollView>
       </View>
     </Modal>
