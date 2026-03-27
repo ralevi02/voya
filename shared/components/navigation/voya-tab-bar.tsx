@@ -1,71 +1,83 @@
 import { View, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
-import {
-  MapPin, CalendarDays, Home, DollarSign, Bell,
-} from 'lucide-react-native';
 import { DockTabItem } from './dock-tab-item';
+import type { DockTheme } from './dock-tab-item';
+import type { LucideIcon } from 'lucide-react-native';
 
-const TABS = [
-  { key: 'map', label: 'Mapa', icon: MapPin },
-  { key: 'agenda', label: 'Agenda', icon: CalendarDays },
-  { key: 'home', label: 'Inicio', icon: Home, isCenter: true },
-  { key: 'expenses', label: 'Gastos', icon: DollarSign },
-  { key: 'alerts', label: 'Alertas', icon: Bell, hasBadge: true },
-] as const;
+export interface TabDef {
+  key: string;
+  label: string;
+  icon: LucideIcon;
+  hasBadge?: boolean;
+}
 
 interface VoyaTabBarProps {
-  activeTab?: string;
-  onTabPress?: (key: string) => void;
+  tabs: TabDef[];
+  activeTab: string;
+  onTabPress: (key: string) => void;
+  theme?: DockTheme;
 }
 
 export function VoyaTabBar({
-  activeTab = 'home',
+  tabs,
+  activeTab,
   onTabPress,
+  theme = 'dark',
 }: VoyaTabBarProps) {
+  const isDark = theme === 'dark';
+
   return (
-    <View style={S.wrapper}>
+    <View style={[S.wrapper, isDark ? S.wrapperDark : S.wrapperLight]}>
       <View style={S.separator} />
-      <View style={S.dock}>
-        <BlurView intensity={64} tint="dark" style={S.blur} />
-        <View style={S.insetHighlight} />
+      <View style={[S.dock, isDark ? S.dockDark : S.dockLight]}>
+        {isDark && (
+          <BlurView intensity={64} tint="dark" style={S.blur} />
+        )}
+        {isDark && <View style={S.insetHighlight} />}
         <View style={S.row}>
-          {TABS.map((tab) => (
+          {tabs.map((tab) => (
             <DockTabItem
               key={tab.key}
               icon={tab.icon}
               label={tab.label}
-              isCenter={'isCenter' in tab}
               isActive={activeTab === tab.key}
-              hasBadge={'hasBadge' in tab}
-              onPress={() => onTabPress?.(tab.key)}
+              hasBadge={tab.hasBadge}
+              theme={theme}
+              onPress={() => onTabPress(tab.key)}
             />
           ))}
         </View>
       </View>
-      <View style={S.indicatorWrap}>
-        <View style={S.indicator} />
-      </View>
+      {isDark && (
+        <View style={S.indicatorWrap}>
+          <View style={S.indicator} />
+        </View>
+      )}
     </View>
   );
 }
 
 const S = StyleSheet.create({
-  wrapper: { backgroundColor: '#060606', paddingHorizontal: 16 },
-  separator: {
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    marginBottom: 10,
-  },
+  wrapper: { paddingHorizontal: 16, paddingBottom: 4 },
+  wrapperDark: { backgroundColor: '#060606' },
+  wrapperLight: { backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E5E7EB' },
+  separator: { height: 1, backgroundColor: 'rgba(255,255,255,0.055)' },
   dock: {
     borderRadius: 28,
     overflow: 'hidden',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    position: 'relative',
+  },
+  dockDark: {
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.16)',
     backgroundColor: 'rgba(255,255,255,0.09)',
-    paddingVertical: 11,
-    paddingHorizontal: 18,
-    marginBottom: 10,
-    position: 'relative',
+    marginBottom: 6,
+  },
+  dockLight: {
+    backgroundColor: 'transparent',
+    marginBottom: 0,
   },
   blur: { ...StyleSheet.absoluteFillObject, borderRadius: 28 },
   insetHighlight: {
@@ -82,7 +94,7 @@ const S = StyleSheet.create({
     position: 'relative',
     zIndex: 1,
   },
-  indicatorWrap: { paddingVertical: 6, paddingBottom: 14 },
+  indicatorWrap: { paddingVertical: 4, paddingBottom: 10 },
   indicator: {
     width: 134,
     height: 5,

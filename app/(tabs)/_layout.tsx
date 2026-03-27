@@ -1,55 +1,48 @@
 import { Tabs } from 'expo-router';
 import { Home, Compass, Wallet, User } from 'lucide-react-native';
-import { COLORS } from '@/shared/constants/colors';
+import { VoyaTabBar } from '@/shared/components/navigation/voya-tab-bar';
+import type { TabDef } from '@/shared/components/navigation/voya-tab-bar';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+
+const MAIN_TABS: TabDef[] = [
+  { key: 'index', label: 'Viajes', icon: Home },
+  { key: 'explore', label: 'Explorar', icon: Compass },
+  { key: 'expenses', label: 'Gastos', icon: Wallet },
+  { key: 'profile', label: 'Perfil', icon: User },
+];
+
+function CustomTabBar({ state, navigation }: BottomTabBarProps) {
+  const activeKey = state.routes[state.index]?.name ?? 'index';
+
+  return (
+    <VoyaTabBar
+      tabs={MAIN_TABS}
+      activeTab={activeKey}
+      theme="light"
+      onTabPress={(key) => {
+        const event = navigation.emit({
+          type: 'tabPress',
+          target: state.routes.find((r) => r.name === key)?.key,
+          canPreventDefault: true,
+        });
+        if (!event.defaultPrevented) {
+          navigation.navigate(key);
+        }
+      }}
+    />
+  );
+}
 
 export default function TabLayout() {
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: COLORS.primary[600],
-        tabBarInactiveTintColor: COLORS.neutral[400],
-        headerShown: false,
-        tabBarStyle: {
-          borderTopColor: COLORS.neutral[200],
-        },
-      }}
+      tabBar={(props) => <CustomTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Viajes',
-          tabBarIcon: ({ color, size }) => (
-            <Home size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explorar',
-          tabBarIcon: ({ color, size }) => (
-            <Compass size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="expenses"
-        options={{
-          title: 'Gastos',
-          tabBarIcon: ({ color, size }) => (
-            <Wallet size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color, size }) => (
-            <User size={size} color={color} />
-          ),
-        }}
-      />
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="explore" />
+      <Tabs.Screen name="expenses" />
+      <Tabs.Screen name="profile" />
     </Tabs>
   );
 }

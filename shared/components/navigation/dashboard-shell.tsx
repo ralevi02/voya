@@ -2,40 +2,41 @@ import { View, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams, usePathname } from 'expo-router';
 import { useCallback } from 'react';
 import type { ReactNode } from 'react';
+import {
+  MapPin, CalendarDays, Home, DollarSign, Bell,
+} from 'lucide-react-native';
 import { VoyaTabBar } from './voya-tab-bar';
+import type { TabDef } from './voya-tab-bar';
 
-/** Maps tab keys to route segments inside /trip/[id]/ */
-const TAB_ROUTES: Record<string, string> = {
+const TRIP_TABS: TabDef[] = [
+  { key: 'home', label: 'Inicio', icon: Home },
+  { key: 'agenda', label: 'Agenda', icon: CalendarDays },
+  { key: 'expenses', label: 'Gastos', icon: DollarSign },
+  { key: 'vault', label: 'Bóveda', icon: MapPin },
+  { key: 'alerts', label: 'Alertas', icon: Bell, hasBadge: true },
+];
+
+const ROUTE_MAP: Record<string, string> = {
   home: '',
   agenda: 'itinerary',
   expenses: 'expenses',
-  map: 'vault',
+  vault: 'vault',
   alerts: 'chat',
 };
 
-interface DashboardShellProps {
-  children: ReactNode;
-}
+interface DashboardShellProps { children: ReactNode }
 
-/**
- * Persistent shell for all trip screens.
- * Renders the VoyaTabBar at the bottom with real navigation.
- */
 export function DashboardShell({ children }: DashboardShellProps) {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const pathname = usePathname();
-
-  const activeTab = deriveActiveTab(pathname);
+  const activeTab = deriveTab(pathname);
 
   const handleTab = useCallback(
     (key: string) => {
       if (key === activeTab) return;
-      const segment = TAB_ROUTES[key] ?? '';
-      const route = segment
-        ? `/trip/${id}/${segment}`
-        : `/trip/${id}`;
-      router.push(route as never);
+      const seg = ROUTE_MAP[key] ?? '';
+      router.push((seg ? `/trip/${id}/${seg}` : `/trip/${id}`) as never);
     },
     [id, router, activeTab],
   );
@@ -43,16 +44,21 @@ export function DashboardShell({ children }: DashboardShellProps) {
   return (
     <View style={S.root}>
       <View style={S.content}>{children}</View>
-      <VoyaTabBar activeTab={activeTab} onTabPress={handleTab} />
+      <VoyaTabBar
+        tabs={TRIP_TABS}
+        activeTab={activeTab}
+        theme="dark"
+        onTabPress={handleTab}
+      />
     </View>
   );
 }
 
-function deriveActiveTab(pathname: string): string {
-  if (pathname.endsWith('/itinerary')) return 'agenda';
-  if (pathname.endsWith('/expenses')) return 'expenses';
-  if (pathname.endsWith('/vault')) return 'map';
-  if (pathname.endsWith('/chat')) return 'alerts';
+function deriveTab(p: string): string {
+  if (p.endsWith('/itinerary')) return 'agenda';
+  if (p.endsWith('/expenses')) return 'expenses';
+  if (p.endsWith('/vault')) return 'vault';
+  if (p.endsWith('/chat')) return 'alerts';
   return 'home';
 }
 
