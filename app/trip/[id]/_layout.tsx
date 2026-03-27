@@ -23,6 +23,14 @@ export default function TripDetailLayout() {
         name="album"
         options={{ title: 'Álbum' }}
       />
+      <Stack.Screen
+        name="chat"
+        options={{ title: 'Voya Concierge' }}
+      />
+      <Stack.Screen
+        name="dashboard"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }
