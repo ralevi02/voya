@@ -2,6 +2,7 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { MapHeader } from './map-header';
 import { TripHeroCard } from './trip-hero-card';
 import { QuickStatsGrid } from './quick-stats-grid';
+import { TimelineView } from './timeline-view';
 import { FinancePanel } from './finance-panel';
 import { DARK } from '../constants/colors';
 import type { DashboardTrip } from '../types/dashboard.types';
@@ -32,7 +33,14 @@ export function TripDashboard({ trip }: TripDashboardProps) {
       {/* Widgets */}
       <View style={S.widgets}>
         <QuickStatsGrid trip={trip} />
-        <FinancePanel finance={trip.finance} />
+        {trip.timeline.length > 0 && (
+          <View style={S.section}>
+            <TimelineView events={trip.timeline} />
+          </View>
+        )}
+        <View style={S.section}>
+          <FinancePanel finance={trip.finance} />
+        </View>
       </View>
     </ScrollView>
   );
@@ -56,5 +64,8 @@ const S = StyleSheet.create({
   },
   widgets: {
     paddingHorizontal: 16,
+  },
+  section: {
+    marginTop: 12,
   },
 });

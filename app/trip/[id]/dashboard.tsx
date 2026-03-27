@@ -43,6 +43,32 @@ const MOCK_TRIP: DashboardTrip = {
     currency: '€',
     status: 'on_track',
   },
+  timeline: [
+    {
+      id: 'ev1',
+      title: 'Check-in online',
+      time: '07:00',
+      subtitle: 'Completado',
+      status: 'past',
+      icon: 'clock',
+    },
+    {
+      id: 'ev2',
+      title: 'Vuelo AA 1284 → MIA',
+      time: '14:35',
+      subtitle: 'En curso',
+      status: 'active',
+      icon: 'flight',
+    },
+    {
+      id: 'ev3',
+      title: 'Nobu Hotel · Brickell',
+      time: '18:00',
+      subtitle: 'Check-in',
+      status: 'next',
+      icon: 'hotel',
+    },
+  ],
 };
 
 export default function DashboardScreen() {

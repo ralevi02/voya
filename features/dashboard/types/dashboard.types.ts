@@ -37,6 +37,17 @@ export interface FinanceOverview {
   status: 'on_track' | 'behind';
 }
 
+export type TimelineStatus = 'past' | 'active' | 'next';
+
+export interface TimelineEvent {
+  id: string;
+  title: string;
+  time: string;
+  subtitle: string;
+  status: TimelineStatus;
+  icon: 'clock' | 'flight' | 'hotel';
+}
+
 export interface DashboardTrip {
   id: string;
   name: string;
@@ -49,4 +60,5 @@ export interface DashboardTrip {
   members: GroupMember[];
   memberCount: number;
   finance: FinanceOverview;
+  timeline: TimelineEvent[];
 }
