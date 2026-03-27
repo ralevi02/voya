@@ -1,4 +1,6 @@
+import { useState, useCallback } from 'react';
 import { TripDashboard } from '@/features/dashboard/components/trip-dashboard';
+import { VoyaTabBar } from '@/shared/components/navigation/voya-tab-bar';
 import type { DashboardTrip } from '@/features/dashboard/types/dashboard.types';
 
 const MOCK_TRIP: DashboardTrip = {
@@ -72,5 +74,13 @@ const MOCK_TRIP: DashboardTrip = {
 };
 
 export default function DashboardScreen() {
-  return <TripDashboard trip={MOCK_TRIP} />;
+  const [activeTab, setActiveTab] = useState('home');
+  const handleTab = useCallback((key: string) => setActiveTab(key), []);
+
+  return (
+    <TripDashboard
+      trip={MOCK_TRIP}
+      footer={<VoyaTabBar activeTab={activeTab} onTabPress={handleTab} />}
+    />
+  );
 }

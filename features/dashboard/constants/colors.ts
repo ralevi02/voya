@@ -27,6 +27,13 @@ export const GLASS = {
     inset: 'rgba(255,255,255,0.17)',
     blur: 56,
   },
+  /** .g-dock — bottom dock glass */
+  dock: {
+    bg: 'rgba(255,255,255,0.09)',
+    border: 'rgba(255,255,255,0.16)',
+    inset: 'rgba(255,255,255,0.20)',
+    blur: 64,
+  },
 } as const;
 
 /** Accent green used across badges & status */

@@ -4,7 +4,7 @@ import { BlurView } from 'expo-blur';
 import type { ReactNode } from 'react';
 import { GLASS } from '../constants/colors';
 
-type Variant = 'standard' | 'subtle' | 'hero';
+type Variant = 'standard' | 'subtle' | 'hero' | 'dock';
 
 interface GlassCardProps {
   variant?: Variant;
