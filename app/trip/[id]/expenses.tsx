@@ -15,6 +15,7 @@ import { FabAddItem } from '@/features/itinerary/components/fab-add-item';
 import { AddExpenseModal } from '@/features/expenses/components/add-expense-modal';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorView } from '@/shared/components/ui/error-view';
+import { TripScreenWrapper } from '@/shared/components/navigation/trip-screen-wrapper';
 import type { ExpenseWithSplits } from '@/features/expenses/types/expense.types';
 
 export default function TripExpensesScreen() {
@@ -79,6 +80,7 @@ export default function TripExpensesScreen() {
   const hasExpenses = !!expenses?.length;
 
   return (
+    <TripScreenWrapper>
     <SafeAreaView className="flex-1 bg-neutral-50" edges={['bottom']}>
       <View className="px-6 pt-2 pb-3 bg-white border-b border-neutral-100">
         <Text className="text-2xl font-bold text-neutral-900">
@@ -132,5 +134,6 @@ export default function TripExpensesScreen() {
         onClose={() => setModalVisible(false)}
       />
     </SafeAreaView>
+    </TripScreenWrapper>
   );
 }

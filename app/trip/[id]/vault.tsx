@@ -13,6 +13,7 @@ import { FabAddItem } from '@/features/itinerary/components/fab-add-item';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorView } from '@/shared/components/ui/error-view';
 import { DOC_TYPES, DOC_TYPE_CONFIG } from '@/features/vault/constants/doc-types';
+import { TripScreenWrapper } from '@/shared/components/navigation/trip-screen-wrapper';
 import type { TravelDocument, DocType } from '@/features/vault/types/vault.types';
 
 type FilterType = 'all' | DocType;
@@ -48,6 +49,7 @@ export default function TripVaultScreen() {
   const hasDocs = !!docs?.length;
 
   return (
+    <TripScreenWrapper>
     <SafeAreaView className="flex-1 bg-neutral-50" edges={['bottom']}>
       {/* Header */}
       <View className="px-6 pt-2 pb-3 bg-white border-b border-neutral-100">
@@ -94,6 +96,7 @@ export default function TripVaultScreen() {
         onClose={() => setSelectedDoc(null)}
       />
     </SafeAreaView>
+    </TripScreenWrapper>
   );
 }
 

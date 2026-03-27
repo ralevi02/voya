@@ -14,6 +14,7 @@ import { AddItemModal } from '@/features/itinerary/components/add-item-modal';
 import { ItemDetailModal } from '@/features/itinerary/components/item-detail-modal';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorView } from '@/shared/components/ui/error-view';
+import { TripScreenWrapper } from '@/shared/components/navigation/trip-screen-wrapper';
 import type { ItineraryItem, ItineraryItemType } from '@/features/itinerary/types/itinerary.types';
 
 export default function TripItineraryScreen() {
@@ -55,6 +56,7 @@ export default function TripItineraryScreen() {
   const hasItems = !!items?.length;
 
   return (
+    <TripScreenWrapper>
     <SafeAreaView className="flex-1 bg-neutral-50" edges={['bottom']}>
       {/* Header */}
       <View className="px-6 pt-2 pb-3 bg-white border-b border-neutral-100">
@@ -109,5 +111,6 @@ export default function TripItineraryScreen() {
         onClose={() => setSelectedItem(null)}
       />
     </SafeAreaView>
+    </TripScreenWrapper>
   );
 }
