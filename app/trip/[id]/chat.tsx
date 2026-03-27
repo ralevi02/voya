@@ -12,6 +12,7 @@ import { useConcierge } from '@/features/ai/hooks/use-concierge';
 import { ChatBubble } from '@/features/ai/components/chat-bubble';
 import { ChatInput } from '@/features/ai/components/chat-input';
 import { ThinkingIndicator } from '@/features/ai/components/thinking-indicator';
+import { DashboardShell } from '@/shared/components/navigation/dashboard-shell';
 import type { TripContext } from '@/features/ai/types/ai.types';
 
 function buildItinerarySummary(
@@ -56,6 +57,7 @@ export default function TripChatScreen() {
   }, [messages.length]);
 
   return (
+    <DashboardShell>
     <SafeAreaView className="flex-1 bg-neutral-50" edges={['bottom']}>
       <KeyboardAvoidingView
         className="flex-1"
@@ -87,6 +89,7 @@ export default function TripChatScreen() {
         <ChatInput onSend={send} isSending={isSending} />
       </KeyboardAvoidingView>
     </SafeAreaView>
+    </DashboardShell>
   );
 }
 

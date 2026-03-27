@@ -1,5 +1,4 @@
 import { View, ScrollView, StyleSheet } from 'react-native';
-import type { ReactNode } from 'react';
 import { MapHeader } from './map-header';
 import { TripHeroCard } from './trip-hero-card';
 import { QuickStatsGrid } from './quick-stats-grid';
@@ -10,54 +9,47 @@ import type { DashboardTrip } from '../types/dashboard.types';
 
 interface TripDashboardProps {
   trip: DashboardTrip;
-  footer?: ReactNode;
 }
 
-export function TripDashboard({ trip, footer }: TripDashboardProps) {
+export function TripDashboard({ trip }: TripDashboardProps) {
   return (
-    <View style={S.root}>
-      <ScrollView
-        style={S.scroll}
-        contentContainerStyle={S.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Map zone + hero card overlap area */}
-        <View style={S.mapZone}>
-          <MapHeader
-            tripName={trip.name}
-            year={trip.year}
-            onlineCount={trip.onlineCount}
-          />
-          {trip.activeFlight && (
-            <TripHeroCard flight={trip.activeFlight} style={S.heroCard} />
-          )}
-        </View>
+    <ScrollView
+      style={S.scroll}
+      contentContainerStyle={S.content}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Map zone + hero card overlap area */}
+      <View style={S.mapZone}>
+        <MapHeader
+          tripName={trip.name}
+          year={trip.year}
+          onlineCount={trip.onlineCount}
+        />
+        {trip.activeFlight && (
+          <TripHeroCard flight={trip.activeFlight} style={S.heroCard} />
+        )}
+      </View>
 
-        {/* Widgets */}
-        <View style={S.widgets}>
-          <QuickStatsGrid trip={trip} />
-          {trip.timeline.length > 0 && (
-            <View style={S.section}>
-              <TimelineView events={trip.timeline} />
-            </View>
-          )}
+      {/* Widgets */}
+      <View style={S.widgets}>
+        <QuickStatsGrid trip={trip} />
+        {trip.timeline.length > 0 && (
           <View style={S.section}>
-            <FinancePanel finance={trip.finance} />
+            <TimelineView events={trip.timeline} />
           </View>
+        )}
+        <View style={S.section}>
+          <FinancePanel finance={trip.finance} />
         </View>
-      </ScrollView>
-      {footer}
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const S = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: DARK.bg,
-  },
   scroll: {
     flex: 1,
+    backgroundColor: DARK.bg,
   },
   content: {
     paddingBottom: 12,
